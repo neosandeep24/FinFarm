@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kid's Money Island - FinFarm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #F59E0B 0%, #FDE047 100%);
+            color: #7C2D12;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px 10px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.7rem;
+            color: #0bf517;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0 #000000;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: #7C2D12;
+        }
+        .wallet {
+            background: #FFFDE7;
+            border-radius: 15px;
+            padding: 15px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            color: #7C2D12;
+        }
+        .wallet span {
+            font-weight: bold;
+        }
+        .game-area {
+            background: #FFF9C4;
+            border-radius: 18px;
+            padding: 30px;
+            min-height: 220px;
+            color: #7C2D12;
+        }
+        .money-question {
+            font-size: 1.2rem;
+            margin-bottom: 18px;
+        }
+        .money-options button {
+            background: #F59E0B;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 24px;
+            margin: 8px 8px 0 0;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .money-options button:hover {
+            background: #FDE047;
+            color: #7C2D12;
+        }
+        .result {
+            margin-top: 18px;
+            font-size: 1.1rem;
+        }
+        /* How to Play Modal */
+        #howToPlayBtn {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1100;
+            background: #FDE047;
+            color: #7C2D12;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.7rem;
+            font-weight: bold;
+            box-shadow: 0 0 10px #FDE047;
+            cursor: pointer;
+        }
+        #howToPlayModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85);
+            z-index: 1200;
+            justify-content: center;
+            align-items: center;
+        }
+        #howToPlayModal .modal-content {
+            background: #FFFDE7;
+            border-radius: 18px;
+            padding: 36px 30px;
+            max-width: 420px;
+            color: #7C2D12;
+            box-shadow: 0 0 40px #FDE047;
+        }
+        #howToPlayModal button {
+            margin-top: 18px;
+            background: #FDE047;
+            color: #7C2D12;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <button id="howToPlayBtn" title="How to Play?">?</button>
+    <div id="howToPlayModal">
+        <div class="modal-content">
+            <h2>How to Play Kid's Money Island</h2>
+            <ul style="line-height:1.7;font-size:1rem;">
+                <li>Read the money question on the screen.</li>
+                <li>Click the answer you think is correct.</li>
+                <li>Earn coins for every right answer!</li>
+                <li>Try to get as many coins as you can!</li>
+            </ul>
+            <button onclick="document.getElementById('howToPlayModal').style.display='none'">Close</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="header">
+            <h1>Kid's Money Island</h1>
+            <p>Fun and interactive money lessons for young learners!</p>
+        </div>
+        <div class="wallet">
+            <div>🪙 <span id="coinsDisplay">Coins: 0</span></div>
+            <div>⭐ <span id="scoreDisplay">Score: 0</span></div>
+        </div>
+        <div class="game-area">
+            <div class="money-question" id="question"></div>
+            <div class="money-options" id="options"></div>
+            <div class="result" id="result"></div>
+        </div>
+    </div>
+    <script>
+        // How to Play modal logic
+        document.getElementById('howToPlayBtn').onclick = function() {
+            document.getElementById('howToPlayModal').style.display = 'flex';
+        };
+        document.getElementById('howToPlayModal').onclick = function(e) {
+            if (e.target === this) this.style.display = 'none';
+        };
+
+        // Simple quiz logic
+                const questions = [
+            { q: "You have 2 coins. You get 3 more. How many coins do you have now?", options: ["3", "5", "6"], answer: "5" },
+            { q: "Which one is money?", options: ["🍎 Apple", "💵 Dollar", "🐶 Dog"], answer: "💵 Dollar" },
+            { q: "If you buy a toy for $4 and you have $10, how much is left?", options: ["$6", "$4", "$14"], answer: "$6" },
+            { q: "Which is a good way to save money?", options: ["Spend it all", "Put it in a piggy bank", "Lose it"], answer: "Put it in a piggy bank" },
+            { q: "What do you use to buy things at a shop?", options: ["Money", "Stones", "Leaves"], answer: "Money" },
+            { q: "If you have 5 candies and give 2 to a friend, how many do you have left?", options: ["3", "2", "5"], answer: "3" },
+            { q: "Which is cheaper?", options: ["$2 toy", "$5 toy", "$10 toy"], answer: "$2 toy" },
+            { q: "If you save $1 every day, how much after 7 days?", options: ["$5", "$7", "$10"], answer: "$7" },
+            { q: "What is a wallet for?", options: ["Carrying money", "Carrying water", "Carrying food"], answer: "Carrying money" },
+            { q: "If you want to buy a $10 book but have $8, what should you do?", options: ["Save more", "Buy now", "Borrow"], answer: "Save more" },
+            { q: "Which is a coin?", options: ["🪙", "🍌", "🎈"], answer: "🪙" },
+            { q: "If you get $2 for chores and $3 for birthday, how much total?", options: ["$2", "$3", "$5"], answer: "$5" },
+            { q: "What is a bank?", options: ["Place to keep money", "Zoo", "School"], answer: "Place to keep money" },
+            { q: "If you spend all your money, how much is left?", options: ["Zero", "Ten", "Five"], answer: "Zero" },
+            { q: "Which is a smart way to use money?", options: ["Save some", "Spend all", "Lose it"], answer: "Save some" },
+            { q: "If you have 10 coins and lose 4, how many left?", options: ["6", "4", "14"], answer: "6" },
+            { q: "What do you call money you get for doing chores?", options: ["Allowance", "Homework", "Prize"], answer: "Allowance" },
+            { q: "If you want to buy a $5 toy and have $2, what do you need?", options: ["$3 more", "$2 more", "$5 more"], answer: "$3 more" },
+            { q: "Which is a need?", options: ["Food", "Video game", "Candy"], answer: "Food" },
+            { q: "If you save $2 a week, how much after 4 weeks?", options: ["$6", "$8", "$4"], answer: "$8" }
+        ];
+        let current = 0, coins = 0, score = 0;
+
+        function showQuestion() {
+            if (current >= questions.length) {
+                document.getElementById('question').textContent = "Great job! You finished all questions!";
+                document.getElementById('options').innerHTML = "";
+                document.getElementById('result').textContent = `Final Score: ${score} | Coins: ${coins}`;
+                return;
+            }
+            const q = questions[current];
+            document.getElementById('question').textContent = q.q;
+            document.getElementById('options').innerHTML = "";
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(opt);
+                document.getElementById('options').appendChild(btn);
+            });
+            document.getElementById('result').textContent = "";
+        }
+
+        function checkAnswer(opt) {
+            if (opt === questions[current].answer) {
+                coins += 2;
+                score += 10;
+                document.getElementById('result').textContent = "✅ Correct! +2 coins, +10 score!";
+            } else {
+                document.getElementById('result').textContent = "❌ Oops! Try the next one!";
+            }
+            document.getElementById('coinsDisplay').textContent = `Coins: ${coins}`;
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
+            current++;
+            setTimeout(showQuestion, 1200);
+        }
+
+        // Start game
+        showQuestion();
+    </script>
+</body>
+</html>

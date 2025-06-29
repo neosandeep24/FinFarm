@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EcoLab: Economics Simulator - FinFarm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #1e293b 0%, #2563eb 100%);
+            --card-bg: rgba(30, 41, 59, 0.92);
+            --accent: #fde68a;
+            --accent2: #fbbf24;
+            --text-main: #fff;
+            --text-accent: #fde68a;
+            --btn-bg: #fde68a;
+            --btn-text: #1e293b;
+            --btn-hover: #fbbf24;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 30px 10px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.7rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .header p {
+            font-size: 1.2rem;
+            color: #e0e7ef;
+        }
+        .wallet {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 18px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 12px 0 rgba(30,41,59,0.18);
+        }
+        .wallet span {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .game-area {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 30px;
+            min-height: 320px;
+            box-shadow: 0 2px 12px 0 rgba(30,41,59,0.18);
+        }
+        .eco-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .eco-table th, .eco-table td {
+            padding: 10px 8px;
+            text-align: center;
+        }
+        .eco-table th {
+            background: #1e293b;
+            color: var(--accent);
+        }
+        .eco-table tr:nth-child(even) {
+            background: rgba(255,255,255,0.04);
+        }
+        .result, .advice, .event {
+            margin-top: 25px;
+            font-size: 1.1rem;
+        }
+        .advice {
+            background: #1e293b;
+            color: var(--accent);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+        .event {
+            background: var(--accent);
+            color: #1e293b;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: bold;
+        }
+        .budget-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 2px 8px 0 rgba(251,191,36,0.08);
+        }
+        .budget-btn:hover {
+            background: var(--btn-hover);
+            color: #1e293b;
+        }
+        #howToPlayBtn {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1100;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.7rem;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--btn-bg);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        #howToPlayBtn:hover {
+            background: var(--btn-hover);
+            color: #1e293b;
+        }
+        #howToPlayModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.92);
+            z-index: 1200;
+            justify-content: center;
+            align-items: center;
+        }
+        #howToPlayModal .modal-content {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 36px 30px;
+            max-width: 420px;
+            color: var(--accent);
+            box-shadow: 0 0 40px var(--accent2);
+        }
+        #howToPlayModal button {
+            margin-top: 18px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 28px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        #howToPlayModal button:hover {
+            background: var(--btn-hover);
+            color: #1e293b;
+        }
+        .game-area input[type="number"] {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            width: 100px;
+            background: #fff;
+            color: #1e293b;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button id="howToPlayBtn" title="How to Play?">?</button>
+    <div id="howToPlayModal">
+        <div class="modal-content">
+            <h2>How to Play EcoLab</h2>
+            <ul style="color:#fff;line-height:1.7;font-size:1rem;">
+                <li>Set your city’s production, consumption, and trade policies each round.</li>
+                <li>Balance resources, jobs, environment, and happiness.</li>
+                <li>Random events (like fish booms, pollution, or trade wars) affect your city!</li>
+                <li>Try to maximize prosperity and sustainability over 10 years.</li>
+            </ul>
+            <button onclick="document.getElementById('howToPlayModal').style.display='none'">Close</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="header">
+            <h1>EcoLab: Economics Simulator</h1>
+            <p>Run your own city! Balance jobs, resources, trade, and the environment.</p>
+        </div>
+        <div class="wallet">
+            <div>🏙️ <span id="yearDisplay">Year: 1</span></div>
+            <div>💰 <span id="moneyDisplay">Money: $10,000</span></div>
+            <div>👨‍👩‍👧‍👦 <span id="popDisplay">Population: 1,000</span></div>
+            <div>🌱 <span id="envDisplay">Env: 100</span></div>
+            <div>😊 <span id="happyDisplay">Happiness: 80</span></div>
+        </div>
+        <div class="event" id="eventBar"></div>
+        <div class="game-area">
+            <div>
+                <label for="prodInput">Set Fish Production (tons):</label>
+                <input type="number" id="prodInput" min="0" max="500" value="100" style="width:80px;">
+                <label for="consInput">Set Fish Consumption (tons):</label>
+                <input type="number" id="consInput" min="0" max="500" value="80" style="width:80px;">
+                <label for="tradeInput">Trade (tons, +export/-import):</label>
+                <input type="number" id="tradeInput" min="-200" max="200" value="0" style="width:80px;">
+                <button class="budget-btn" onclick="nextYear()">Next Year</button>
+            </div>
+            <div class="result" id="result"></div>
+            <table class="eco-table" id="ecoTable">
+                <tr>
+                    <th>Year</th>
+                    <th>Fish Stock</th>
+                    <th>Money</th>
+                    <th>Population</th>
+                    <th>Environment</th>
+                    <th>Happiness</th>
+                </tr>
+            </table>
+            <div class="advice" id="advice"></div>
+        </div>
+    </div>
+    <script>
+        // How to Play modal logic
+        document.getElementById('howToPlayBtn').onclick = function() {
+            document.getElementById('howToPlayModal').style.display = 'flex';
+        };
+        document.getElementById('howToPlayModal').onclick = function(e) {
+            if (e.target === this) this.style.display = 'none';
+        };
+
+        // Game state
+        let state = {
+            year: 1,
+            money: 10000,
+            pop: 1000,
+            env: 100,
+            happy: 80,
+            fish: 1000,
+            history: []
+        };
+
+        // Random events
+        const events = [
+            { name: "Fish Boom!", effect: "Fish stock grows 30% extra.", apply: s => s.fish = Math.round(s.fish * 1.3) },
+            { name: "Pollution Spike", effect: "Environment drops by 20.", apply: s => s.env -= 20 },
+            { name: "Trade War", effect: "Trade profit halved.", apply: s => s.tradeMod = 0.5 },
+            { name: "Happy Festival", effect: "Happiness +15.", apply: s => s.happy += 15 },
+            { name: "Disease Outbreak", effect: "Population -10%.", apply: s => s.pop = Math.round(s.pop * 0.9) },
+            { name: "Stable Year", effect: "No major events.", apply: s => {} }
+        ];
+        let lastEvent = events[5];
+
+        function updateWallet() {
+            document.getElementById('yearDisplay').textContent = `Year: ${state.year}`;
+            document.getElementById('moneyDisplay').textContent = `Money: $${state.money}`;
+            document.getElementById('popDisplay').textContent = `Population: ${state.pop}`;
+            document.getElementById('envDisplay').textContent = `Env: ${state.env}`;
+            document.getElementById('happyDisplay').textContent = `Happiness: ${state.happy}`;
+        }
+
+        function updateTable() {
+            let html = `<tr>
+                <th>Year</th>
+                <th>Fish Stock</th>
+                <th>Money</th>
+                <th>Population</th>
+                <th>Environment</th>
+                <th>Happiness</th>
+            </tr>`;
+            for (let h of state.history) {
+                html += `<tr>
+                    <td>${h.year}</td>
+                    <td>${h.fish}</td>
+                    <td>$${h.money}</td>
+                    <td>${h.pop}</td>
+                    <td>${h.env}</td>
+                    <td>${h.happy}</td>
+                </tr>`;
+            }
+            document.getElementById('ecoTable').innerHTML = html;
+        }
+
+        function showAdvice() {
+            let advice = `
+            <b>EcoLab Tips:</b>
+            <ul>
+                <li>Don't overfish! If fish stock drops too low, your city suffers.</li>
+                <li>Balance production, consumption, and trade for steady growth.</li>
+                <li>High environment and happiness boost population growth.</li>
+                <li>Random events can help or hurt—plan for surprises!</li>
+                <li>Try to finish 10 years with high money, population, and environment.</li>
+            </ul>
+            `;
+            document.getElementById('advice').innerHTML = advice;
+        }
+
+        function nextYear() {
+            let prod = parseInt(document.getElementById('prodInput').value) || 0;
+            let cons = parseInt(document.getElementById('consInput').value) || 0;
+            let trade = parseInt(document.getElementById('tradeInput').value) || 0;
+
+            // Clamp values
+            prod = Math.max(0, Math.min(prod, 500));
+            cons = Math.max(0, Math.min(cons, 500));
+            trade = Math.max(-200, Math.min(trade, 200));
+
+            // Fish stock changes
+            let fishGrowth = Math.round(state.fish * 0.15); // natural growth
+            let fishChange = prod - cons + trade + fishGrowth;
+            let newFish = Math.max(0, state.fish + fishChange);
+
+            // Money: earn from exports, spend on imports, cost for production
+            let tradeMod = 1;
+            // Random event
+            lastEvent = events[Math.floor(Math.random() * events.length)];
+            lastEvent.apply({ ...state, tradeMod }); // preview effect
+            if (lastEvent.name === "Trade War") tradeMod = 0.5;
+
+            let tradeProfit = trade * 50 * tradeMod; // $50 per ton exported/imported
+            let prodCost = prod * 10;
+            let consBenefit = cons * 5;
+            let money = state.money - prodCost + tradeProfit + consBenefit;
+
+            // Population changes
+            let popGrowth = Math.round(state.pop * ((state.happy - 50) / 1000));
+            let pop = Math.max(100, state.pop + popGrowth);
+
+            // Environment
+            let env = state.env - Math.round(prod * 0.05) + Math.round(trade * -0.02);
+            env = Math.max(0, Math.min(env, 100));
+
+            // Happiness
+            let happy = state.happy;
+            if (cons < prod) happy -= 5;
+            if (env < 40) happy -= 10;
+            if (trade > 0) happy += 2;
+            happy = Math.max(0, Math.min(happy, 100));
+
+            // Apply event
+            let tempState = { fish: newFish, env, happy, pop, money, tradeMod };
+            lastEvent.apply(tempState);
+
+            // Save history
+            state.history.push({
+                year: state.year,
+                fish: tempState.fish,
+                money: tempState.money,
+                pop: tempState.pop,
+                env: tempState.env,
+                happy: tempState.happy
+            });
+
+            // Update state
+            state.fish = tempState.fish;
+            state.money = tempState.money;
+            state.pop = tempState.pop;
+            state.env = tempState.env;
+            state.happy = tempState.happy;
+            state.year++;
+
+            updateWallet();
+            updateTable();
+            showAdvice();
+
+            document.getElementById('eventBar').textContent = `${lastEvent.name}: ${lastEvent.effect}`;
+            document.getElementById('result').textContent =
+                `Year ${state.year-1} summary: Fish stock is ${state.fish}, money is $${state.money}, population is ${state.pop}, environment is ${state.env}, happiness is ${state.happy}.`;
+
+            // End game after 10 years
+            if (state.year > 10) {
+                document.getElementById('result').textContent += " 🎉 Simulation complete! How did your city do?";
+                document.querySelector('.budget-btn').disabled = true;
+            }
+        }
+
+        // Initialize
+        state.history.push({
+            year: state.year,
+            fish: state.fish,
+            money: state.money,
+            pop: state.pop,
+            env: state.env,
+            happy: state.happy
+        });
+        updateWallet();
+        updateTable();
+        showAdvice();
+        document.getElementById('eventBar').textContent = "Welcome to EcoLab!";
+
+    </script>
+</body>
+</html>

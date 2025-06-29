@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Global Trade Master - FinFarm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-bg: linear-gradient(135deg, #1e293b 0%, #2563eb 100%);
+            --card-bg: rgba(30, 41, 59, 0.96);
+            --accent: #fde68a;
+            --accent2: #fbbf24;
+            --text-main: #fff;
+            --text-accent: #fde68a;
+            --btn-bg: #fde68a;
+            --btn-text: #1e293b;
+            --btn-hover: #fbbf24;
+            --table-header: #1e293b;
+            --table-row-alt: rgba(255,255,255,0.04);
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 30px 10px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.7rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .header p {
+            font-size: 1.2rem;
+            color: #e0e7ef;
+        }
+        .wallet {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 18px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 12px 0 rgba(30,41,59,0.18);
+        }
+        .wallet span {
+            color: var(--accent);
+            font-weight: bold;
+        }
+        .game-area {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 30px;
+            min-height: 320px;
+            box-shadow: 0 2px 12px 0 rgba(30,41,59,0.18);
+        }
+        .trade-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .trade-table th, .trade-table td {
+            padding: 10px 8px;
+            text-align: center;
+        }
+        .trade-table th {
+            background: var(--table-header);
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.08rem;
+            border-bottom: 2px solid var(--accent2);
+        }
+        .trade-table tr:nth-child(even) {
+            background: var(--table-row-alt);
+        }
+        .trade-table tr {
+            transition: background 0.2s;
+        }
+        .trade-table tr:hover {
+            background: rgba(251,191,36,0.08);
+        }
+        .result, .advice, .event {
+            margin-top: 25px;
+            font-size: 1.1rem;
+        }
+        .advice {
+            background: var(--table-header);
+            color: var(--accent);
+            border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 8px 0 rgba(251,191,36,0.08);
+        }
+        .event {
+            background: var(--accent);
+            color: #1e293b;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px 0 rgba(251,191,36,0.08);
+        }
+        .budget-btn, button.budget-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px 0 rgba(251,191,36,0.08);
+        }
+        .budget-btn:hover, button.budget-btn:hover {
+            background: var(--btn-hover);
+            color: #1e293b;
+            box-shadow: 0 4px 16px 0 rgba(251,191,36,0.18);
+        }
+        #howToPlayBtn {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1100;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.7rem;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--btn-bg);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        #howToPlayBtn:hover {
+            background: var(--btn-hover);
+            color: #1e293b;
+        }
+        #howToPlayModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.92);
+            z-index: 1200;
+            justify-content: center;
+            align-items: center;
+        }
+        #howToPlayModal .modal-content {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 36px 30px;
+            max-width: 420px;
+            color: var(--accent);
+            box-shadow: 0 0 40px var(--accent2);
+        }
+        #howToPlayModal button {
+            margin-top: 18px;
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 28px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        #howToPlayModal button:hover {
+            background: var(--btn-hover);
+            color: #1e293b;
+        }
+        .forex-bar {
+            margin: 10px 0 20px 0;
+            background: var(--table-header);
+            color: var(--accent);
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 1.1rem;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            box-shadow: 0 2px 8px 0 rgba(251,191,36,0.08);
+        }
+        select, input[type="number"] {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            background: #fff;
+            color: #1e293b;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        select:focus, input[type="number"]:focus {
+            outline: 2px solid var(--accent2);
+        }
+        label {
+            font-weight: 500;
+            color: var(--accent2);
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+    <button id="howToPlayBtn" title="How to Play?">?</button>
+    <div id="howToPlayModal">
+        <div class="modal-content">
+            <h2>How to Play Global Trade Master</h2>
+            <ul style="color:#fff;line-height:1.7;font-size:1rem;">
+                <li>Buy and sell goods (like fish, rice, electronics) between countries.</li>
+                <li>Watch prices, shipping, and currency rates change each round.</li>
+                <li>Random global events (war, depression, boom) can affect trade!</li>
+                <li>Try to maximize your profit and grow your trading empire!</li>
+                <li>Learn about global trade, forex, and world events in a fun way!</li>
+            </ul>
+            <button onclick="document.getElementById('howToPlayModal').style.display='none'">Close</button>
+        </div>
+    </div>
+    <div class="container">
+        <div class="header">
+            <h1>Global Trade Master</h1>
+            <p>Become a world-class trader! Buy, ship, and sell goods across the globe.</p>
+        </div>
+        <div class="wallet">
+            <div>🌍 <span id="countryDisplay">Your Country: India</span></div>
+            <div>💰 <span id="cashDisplay">Cash: $5,000</span></div>
+            <div>🚢 <span id="cargoDisplay">Cargo: 0</span></div>
+            <div>🏆 <span id="profitDisplay">Profit: $0</span></div>
+        </div>
+        <div class="forex-bar" id="forexBar">
+            USD/JPY: 150 | USD/EUR: 0.92 | USD/INR: 83 | USD/BRL: 5.2
+        </div>
+        <div class="event" id="eventBar"></div>
+        <div class="game-area">
+            <div>
+                <label for="goodSelect">Choose Good:</label>
+                <select id="goodSelect">
+                    <option value="fish">Fish</option>
+                    <option value="rice">Rice</option>
+                    <option value="electronics">Electronics</option>
+                </select>
+                <label for="countrySelect">Destination:</label>
+                <select id="countrySelect">
+                    <option value="Japan">Japan</option>
+                    <option value="USA">USA</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Germany">Germany</option>
+                </select>
+                <input type="number" id="amountInput" placeholder="Amount" min="1" style="width:80px;">
+                <button class="budget-btn" onclick="trade()">Trade</button>
+            </div>
+            <div class="result" id="result"></div>
+            <table class="trade-table" id="tradeTable">
+                <tr>
+                    <th>Good</th>
+                    <th>Buy Price</th>
+                    <th>Sell Price</th>
+                    <th>Shipping</th>
+                    <th>Market News</th>
+                </tr>
+            </table>
+            <div class="advice" id="advice"></div>
+        </div>
+    </div>
+    <script>
+        // How to Play modal logic
+        document.getElementById('howToPlayBtn').onclick = function() {
+            document.getElementById('howToPlayModal').style.display = 'flex';
+        };
+        document.getElementById('howToPlayModal').onclick = function(e) {
+            if (e.target === this) this.style.display = 'none';
+        };
+
+        // Game state
+        let state = {
+            country: "India",
+            cash: 5000,
+            cargo: 0,
+            profit: 0,
+            round: 1
+        };
+
+        // Forex rates (simulate changes)
+        let forex = {
+            JPY: 150,
+            EUR: 0.92,
+            INR: 83,
+            BRL: 5.2
+        };
+
+        // Goods and base prices (in USD)
+        const goods = {
+            fish: { name: "Fish", baseBuy: 10, baseSell: 18 },
+            rice: { name: "Rice", baseBuy: 5, baseSell: 9 },
+            electronics: { name: "Electronics", baseBuy: 100, baseSell: 140 }
+        };
+
+        // Shipping costs by country (in USD)
+        const shipping = {
+            Japan: 200,
+            USA: 400,
+            Brazil: 350,
+            Germany: 300
+        };
+
+        // Market news events
+        const newsEvents = [
+            "Storm delays shipments!",
+            "Tariffs increase costs!",
+            "Demand surges for fish!",
+            "Electronics shortage in USA!",
+            "Rice harvest is excellent!",
+            "No major events."
+        ];
+
+        // Global events
+        const globalEvents = [
+            { name: "World Boom!", effect: "All sell prices +20%", type: "boom" },
+            { name: "Global Depression", effect: "All sell prices -25%", type: "depression" },
+            { name: "War in a region", effect: "Shipping to one country doubles", type: "war" },
+            { name: "Trade Embargo", effect: "Can't trade with one country", type: "embargo" },
+            { name: "Stable Times", effect: "No major global events", type: "none" }
+        ];
+
+        // Dynamic prices and news
+        let market = {};
+        let currentGlobalEvent = { name: "Stable Times", effect: "No major global events", type: "none" };
+        let embargoCountry = null;
+        let warCountry = null;
+
+        function randomizeForex() {
+            // Simulate small random changes
+            forex.JPY = +(150 + (Math.random() - 0.5) * 4).toFixed(2);
+            forex.EUR = +(0.92 + (Math.random() - 0.5) * 0.03).toFixed(3);
+            forex.INR = +(83 + (Math.random() - 0.5) * 1.5).toFixed(2);
+            forex.BRL = +(5.2 + (Math.random() - 0.5) * 0.2).toFixed(2);
+            document.getElementById('forexBar').textContent =
+                `USD/JPY: ${forex.JPY} | USD/EUR: ${forex.EUR} | USD/INR: ${forex.INR} | USD/BRL: ${forex.BRL}`;
+        }
+
+        function randomizeGlobalEvent() {
+            currentGlobalEvent = globalEvents[Math.floor(Math.random() * globalEvents.length)];
+            embargoCountry = null;
+            warCountry = null;
+            if (currentGlobalEvent.type === "embargo") {
+                const countries = ["Japan", "USA", "Brazil", "Germany"];
+                embargoCountry = countries[Math.floor(Math.random() * countries.length)];
+                currentGlobalEvent.effect = `Can't trade with ${embargoCountry}`;
+            }
+            if (currentGlobalEvent.type === "war") {
+                const countries = ["Japan", "USA", "Brazil", "Germany"];
+                warCountry = countries[Math.floor(Math.random() * countries.length)];
+                currentGlobalEvent.effect = `Shipping to ${warCountry} doubles`;
+            }
+            document.getElementById('eventBar').textContent = `${currentGlobalEvent.name}: ${currentGlobalEvent.effect}`;
+        }
+
+        function randomizeMarket() {
+            market = {};
+            for (let key in goods) {
+                // Randomize buy/sell price ±20%
+                let buy = Math.round(goods[key].baseBuy * (0.8 + Math.random() * 0.4));
+                let sell = Math.round(goods[key].baseSell * (0.8 + Math.random() * 0.4));
+                let news = newsEvents[Math.floor(Math.random() * newsEvents.length)];
+                market[key] = { buy, sell, news };
+            }
+            updateTable();
+        }
+
+        function updateTable() {
+            let html = `<tr>
+                <th>Good</th>
+                <th>Buy Price</th>
+                <th>Sell Price</th>
+                <th>Shipping</th>
+                <th>Market News</th>
+            </tr>`;
+            for (let key in goods) {
+                html += `<tr>
+                    <td>${goods[key].name}</td>
+                    <td>$${market[key].buy}</td>
+                    <td>$${market[key].sell}</td>
+                    <td>$${shipping[document.getElementById('countrySelect').value]}</td>
+                    <td>${market[key].news}</td>
+                </tr>`;
+            }
+            document.getElementById('tradeTable').innerHTML = html;
+        }
+
+        function updateWallet() {
+            document.getElementById('countryDisplay').textContent = `Your Country: ${state.country}`;
+            document.getElementById('cashDisplay').textContent = `Cash: $${state.cash}`;
+            document.getElementById('cargoDisplay').textContent = `Cargo: ${state.cargo}`;
+            document.getElementById('profitDisplay').textContent = `Profit: $${state.profit}`;
+        }
+
+        function trade() {
+            const goodKey = document.getElementById('goodSelect').value;
+            const dest = document.getElementById('countrySelect').value;
+            const amount = parseInt(document.getElementById('amountInput').value) || 0;
+            if (amount <= 0) {
+                document.getElementById('result').textContent = "Enter a valid amount!";
+                return;
+            }
+            if (embargoCountry && dest === embargoCountry) {
+                document.getElementById('result').textContent = `Trade embargo! You can't trade with ${embargoCountry} this round.`;
+                return;
+            }
+            let buyPrice = market[goodKey].buy * amount;
+            let shipCost = shipping[dest];
+            let sellPrice = market[goodKey].sell * amount;
+            let eventMsg = "";
+
+            // Apply global events
+            if (currentGlobalEvent.type === "boom") {
+                sellPrice = Math.round(sellPrice * 1.2);
+                eventMsg += "Global boom! Sell price +20%. ";
+            }
+            if (currentGlobalEvent.type === "depression") {
+                sellPrice = Math.round(sellPrice * 0.75);
+                eventMsg += "Depression! Sell price -25%. ";
+            }
+            if (currentGlobalEvent.type === "war" && dest === warCountry) {
+                shipCost *= 2;
+                eventMsg += `War! Shipping to ${warCountry} doubled. `;
+            }
+
+            // Apply market news
+            if (market[goodKey].news.includes("Storm")) {
+                eventMsg += "Storm! Shipping cost doubled. ";
+                shipCost *= 2;
+            }
+            if (market[goodKey].news.includes("Tariffs")) {
+                eventMsg += "Tariffs! Sell price reduced 20%. ";
+                sellPrice = Math.round(sellPrice * 0.8);
+            }
+            if (market[goodKey].news.includes("Demand surges")) {
+                eventMsg += "Demand up! Sell price +20%. ";
+                sellPrice = Math.round(sellPrice * 1.2);
+            }
+            if (market[goodKey].news.includes("shortage")) {
+                eventMsg += "Shortage! Sell price +30%. ";
+                sellPrice = Math.round(sellPrice * 1.3);
+            }
+            if (market[goodKey].news.includes("harvest")) {
+                eventMsg += "Good harvest! Buy price -10%. ";
+                buyPrice = Math.round(buyPrice * 0.9);
+            }
+
+            // Apply forex (simulate: if trading to non-USD country, convert profit)
+            let forexRate = 1;
+            if (dest === "Japan") forexRate = forex.JPY;
+            if (dest === "Germany") forexRate = forex.EUR;
+            if (dest === "Brazil") forexRate = forex.BRL;
+            // For simplicity, profit is still in USD, but you can display converted value
+            let convertedSell = sellPrice * forexRate;
+
+            const totalCost = buyPrice + shipCost;
+            if (state.cash < totalCost) {
+                document.getElementById('result').textContent = "Not enough cash for this trade!";
+                return;
+            }
+
+            // Complete trade
+            state.cash -= totalCost;
+            state.cargo += amount;
+            state.cash += sellPrice;
+            state.profit += (sellPrice - totalCost);
+
+            document.getElementById('result').textContent =
+                `Traded ${amount} ${goods[goodKey].name} to ${dest}. ${eventMsg} Sold for $${sellPrice} (≈${convertedSell.toLocaleString(undefined, {maximumFractionDigits:2})} in local currency), profit this trade: $${sellPrice - totalCost}`;
+
+            updateWallet();
+            state.round++;
+            nextRound();
+        }
+
+        function showAdvice() {
+            let advice = `
+            <b>Trade Tips & Global Trade Facts:</b>
+            <ul>
+                <li>Global trade lets countries get goods cheaper, but can hurt local industries.</li>
+                <li>Currency (forex) rates affect your profit when trading internationally.</li>
+                <li>Wars, embargoes, and depressions can disrupt trade and cause losses.</li>
+                <li>Trade can create jobs, but also cause job losses in some sectors.</li>
+                <li>Balance risk: diversify goods and destinations, watch for global events!</li>
+            </ul>
+            <b>Disadvantages:</b>
+            <ul>
+                <li>Over-dependence on imports/exports can be risky.</li>
+                <li>Trade wars and tariffs can reduce profits.</li>
+                <li>Economic crises (like depressions) can crash prices globally.</li>
+            </ul>
+            `;
+            document.getElementById('advice').innerHTML = advice;
+        }
+
+        function nextRound() {
+            randomizeForex();
+            randomizeGlobalEvent();
+            randomizeMarket();
+            showAdvice();
+        }
+
+        // Update shipping costs when country changes
+        document.getElementById('countrySelect').onchange = updateTable;
+
+        // Initialize game
+        nextRound();
+        updateWallet();
+    </script>
+</body>
+</html>

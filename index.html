@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinFarm - The Gamified Money Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #4A0080 0%, #6B46C1 50%, #7C3AED 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #FDE68A;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            letter-spacing: -2px;
+        }
+
+        .header p {
+            font-size: 1.5rem;
+            color: #E5E7EB;
+            font-weight: 300;
+        }
+
+        .quest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .quest-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .quest-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .quest-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .quest-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .cryptoland {
+            background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+        }
+
+        .budgetville {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+        }
+
+        .globaltrade {
+            background: linear-gradient(135deg, #047857 0%, #10B981 100%);
+        }
+
+        .ecolab {
+            background: linear-gradient(135deg, #0891B2 0%, #06B6D4 100%);
+        }
+
+        .kidsisland {
+            background: linear-gradient(135deg, #F59E0B 0%, #FDE047 100%);
+            color: #7C2D12;
+        }
+
+        .quest-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .quest-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .quest-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #10B981, #06B6D4);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .kidsisland .start-btn {
+            background: linear-gradient(45deg, #F97316, #FB923C);
+            color: white;
+        }
+
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-coin {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #FDE68A;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-coin:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-coin:nth-child(2) { top: 20%; right: 15%; animation-delay: 2s; }
+        .floating-coin:nth-child(3) { bottom: 20%; left: 20%; animation-delay: 4s; }
+        .floating-coin:nth-child(4) { bottom: 10%; right: 10%; animation-delay: 1s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .stats-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FDE68A;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.2rem;
+            }
+            
+            .quest-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .quest-card {
+                padding: 20px;
+            }
+        }
+
+        .progress-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #10B981, #06B6D4);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(74, 0, 128, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid #FDE68A;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="floating-coin"></div>
+        <div class="floating-coin"></div>
+        <div class="floating-coin"></div>
+        <div class="floating-coin"></div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>FinFarm</h1>
+            <p>The Gamified Money Journey</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="totalPoints">1,250</div>
+                <div class="stat-label">Total Points</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="completedQuests">3</div>
+                <div class="stat-label">Completed Quests</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="currentLevel">Level 5</div>
+                <div class="stat-label">Current Level</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="achievements">🏆 12</div>
+                <div class="stat-label">Achievements</div>
+            </div>
+        </div>
+
+        <div class="quest-grid">
+            <div class="quest-card cryptoland" data-quest="crypto">
+                <!-- <div class="progress-indicator">85%</div> -->
+                <div class="quest-icon">₿</div>
+                <h3 class="quest-title">CryptoLand</h3>
+                <p class="quest-description">Explore the world of cryptocurrency, blockchain technology, and digital assets. Learn about Bitcoin, Ethereum, and the future of decentralized finance.</p>
+                <button class="start-btn" onclick="startQuest('crypto')">Start Quest</button>
+            </div>
+
+            <div class="quest-card budgetville" data-quest="budget">
+                <!-- <div class="progress-indicator">60%</div> -->
+                <div class="quest-icon">🐷</div>
+                <h3 class="quest-title">BudgetVille</h3>
+                <p class="quest-description">Master the art of budgeting, saving, and personal finance management. Create budgets, track expenses, and build your financial foundation.</p>
+                <button class="start-btn" onclick="startQuest('budget')">Start Quest</button>
+            </div>
+
+            <div class="quest-card globaltrade" data-quest="global">
+                <!-- <div class="progress-indicator">40%</div> -->
+                <div class="quest-icon">🚢</div>
+                <h3 class="quest-title">GlobalTrade Zone</h3>
+                <p class="quest-description">Discover international markets, trading strategies, and global economics. Learn about stocks, forex, and international investment opportunities.</p>
+                <button class="start-btn" onclick="startQuest('global')">Start Quest</button>
+            </div>
+
+            <div class="quest-card ecolab" data-quest="eco">
+                <!-- <div class="progress-indicator">25%</div> -->
+                <div class="quest-icon">🏙️</div>
+                <h3 class="quest-title">EcoLab: Economics Simulator</h3>
+                <p class="quest-description">Run virtual economies, understand market dynamics, and explore macroeconomic principles through interactive simulations and real-world scenarios.</p>
+                <button class="start-btn" onclick="startQuest('eco')">Start Quest</button>
+            </div>
+
+            <div class="quest-card kidsisland" data-quest="kid">
+                <!-- <div class="progress-indicator">90%</div> -->
+                <div class="quest-icon">🧸</div>
+                <h3 class="quest-title">Kid's Money Island</h3>
+                <p class="quest-description">Fun and interactive money lessons for young learners. Learn about counting money, making change, and basic financial concepts through games and activities.</p>
+                <button class="start-btn" onclick="startQuest('kid')">Start Quest</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <div id="notificationText">Quest started successfully!</div>
+    </div>
+
+    <script>
+        // Quest data with corresponding HTML files
+        const questData = {
+            crypto: {
+                name: "CryptoLand",
+                description: "Welcome to the world of cryptocurrency!",
+                points: 500,
+                htmlFile: "crypto.html"
+            },
+            budget: {
+                name: "BudgetVille",
+                description: "Time to master your finances!",
+                points: 300,
+                htmlFile: "budget.html"
+            },
+            global: {
+                name: "GlobalTrade Zone",
+                description: "Enter the global marketplace!",
+                points: 400,
+                htmlFile: "global.html"
+            },
+            eco: {
+                name: "EcoLab",
+                description: "Simulate economic scenarios!",
+                points: 350,
+                htmlFile: "eco.html"
+            },
+            kid: {
+                name: "Kid's Money Island",
+                description: "Fun money adventures await!",
+                points: 200,
+                htmlFile: "kid.html"
+            }
+        };
+
+        // Initialize user stats
+        let userStats = {
+            totalPoints: 1250,
+            completedQuests: 3,
+            level: 5,
+            achievements: 12
+        };
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Show loading overlay
+        function showLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'none';
+        }
+
+        // Start quest function - now navigates to respective HTML pages
+        function startQuest(questType) {
+            const quest = questData[questType];
+            
+            if (!quest) {
+                showNotification('Quest not found!');
+                return;
+            }
+            
+            // Show loading
+            showLoading();
+            
+            // Add visual feedback to the card
+            const questCard = document.querySelector(`[data-quest="${questType}"]`);
+            questCard.style.transform = 'scale(0.95)';
+            
+            // Show notification
+            showNotification(`Starting ${quest.name}...`);
+            
+            // Add points (save to localStorage for persistence)
+            userStats.totalPoints += quest.points;
+            localStorage.setItem('finFarmStats', JSON.stringify(userStats));
+            
+            // Navigate to the respective HTML file after a short delay
+            setTimeout(() => {
+                try {
+                    window.location.href = quest.htmlFile;
+                } catch (error) {
+                    hideLoading();
+                    showNotification(`Error: Could not load ${quest.htmlFile}. Please make sure the file exists.`);
+                    questCard.style.transform = 'scale(1)';
+                }
+            }, 1500);
+        }
+
+        // Load user stats from localStorage
+        function loadUserStats() {
+            const savedStats = localStorage.getItem('finFarmStats');
+            if (savedStats) {
+                userStats = JSON.parse(savedStats);
+                updateStatsDisplay();
+            }
+        }
+
+        // Update stats display
+        function updateStatsDisplay() {
+            document.getElementById('totalPoints').textContent = userStats.totalPoints.toLocaleString();
+            document.getElementById('completedQuests').textContent = userStats.completedQuests;
+            document.getElementById('currentLevel').textContent = `Level ${userStats.level}`;
+            document.getElementById('achievements').textContent = `🏆 ${userStats.achievements}`;
+        }
+
+        // Add hover effects for cards
+        document.querySelectorAll('.quest-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add particle effects on button click
+        document.querySelectorAll('.start-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Create ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.left = (e.clientX - e.target.offsetLeft) + 'px';
+                ripple.style.top = (e.clientY - e.target.offsetTop) + 'px';
+                ripple.style.width = ripple.style.height = '20px';
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add CSS for ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Update stats periodically
+        setInterval(() => {
+            const achievements = document.getElementById('achievements');
+            const currentAchievements = parseInt(achievements.textContent.match(/\d+/)[0]);
+            if (Math.random() < 0.05) { // 5% chance (reduced from 10%)
+                userStats.achievements = currentAchievements + 1;
+                achievements.textContent = `🏆 ${userStats.achievements}`;
+                localStorage.setItem('finFarmStats', JSON.stringify(userStats));
+                showNotification('🏆 New achievement unlocked!');
+            }
+        }, 15000); // Every 15 seconds
+
+        // Initialize the page
+        window.addEventListener('load', () => {
+            loadUserStats();
+            showNotification('Welcome to FinFarm! Choose your adventure!');
+        });
+
+        // Handle page visibility change to hide loading if user switches tabs
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                hideLoading();
+            }
+        });
+    </script>
+</body>
+</html>

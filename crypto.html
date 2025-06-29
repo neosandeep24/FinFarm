@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoLand - Blockchain Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0F0F23 0%, #1A1A2E 50%, #16213E 100%);
+            color: #00FF88;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .neon-glow {
+            text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            background: rgba(0, 255, 136, 0.1);
+            border-bottom: 2px solid #00FF88;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00FF88, #00D4FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        .main-game {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #00FF88;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .crypto-wallet {
+            background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+            border: 2px solid #FFD700;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .wallet-header {
+            color: #FFD700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .crypto-balance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .btc { border-left-color: #F7931A; }
+        .eth { border-left-color: #627EEA; }
+        .ada { border-left-color: #0033AD; }
+
+        .crypto-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .quest-panel {
+            background: linear-gradient(135deg, #2D1B69 0%, #4A148C 100%);
+            border: 2px solid #9C27B0;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.3);
+        }
+
+        .quest-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #9C27B0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quest-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.5);
+        }
+
+        .trading-simulator {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .price-chart {
+            height: 300px;
+            background: linear-gradient(135deg, #001122 0%, #003366 100%);
+            border: 2px solid #00D4FF;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #00FF88, #00D4FF, #FFD700);
+            animation: drawLine 3s ease-in-out infinite;
+        }
+
+        @keyframes drawLine {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .trading-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .trade-button {
+            background: linear-gradient(45deg, #00FF88, #00D4FF);
+            color: #000;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .trade-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+        }
+
+        .sell-button {
+            background: linear-gradient(45deg, #FF4444, #FF6B6B);
+            color: white;
+        }
+
+        .lesson-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+            border: 2px solid #00FF88;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.5);
+        }
+
+        .security-panel {
+            background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
+            border: 2px solid #FF4444;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .security-tip {
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 4px solid #FF4444;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .progress-ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 8;
+        }
+
+        .progress-ring .background {
+            stroke: rgba(0, 255, 136, 0.2);
+        }
+
+        .progress-ring .progress {
+            stroke: #00FF88;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s;
+        }
+
+        .floating-crypto {
+            position: absolute;
+            animation: float 4s ease-in-out infinite;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+
+        .floating-crypto:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+        .floating-crypto:nth-child(2) { top: 30%; right: 10%; animation-delay: 1s; }
+        .floating-crypto:nth-child(3) { bottom: 20%; left: 15%; animation-delay: 2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #00FF88, #00D4FF);
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 10px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+            font-weight: bold;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .trading-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- How to Play Button -->
+    <button id="howToPlayBtn" title="How to Play?" style="position:fixed;top:30px;left:30px;z-index:1100;background:#FFD700;color:#222;border:none;border-radius:50%;width:48px;height:48px;font-size:2rem;box-shadow:0 0 10px #FFD700;cursor:pointer;">?</button>
+    <!-- How to Play Modal -->
+    <div id="howToPlayModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.92);z-index:1200;justify-content:center;align-items:center;">
+        <div style="background:#1A1A2E;border-radius:20px;padding:40px;max-width:500px;width:90%;color:#FFD700;box-shadow:0 0 40px #FFD700;">
+            <h2 style="margin-bottom:20px;">How to Play CryptoLand</h2>
+            <ul style="color:#fff;font-size:1.1rem;line-height:1.7;">
+                <li><b>Buy Crypto:</b> Use the Buy Bitcoin or Buy Ethereum buttons to purchase at the current price.</li>
+                <li><b>Sell Holdings:</b> Instantly sell all your crypto for USD at current prices.</li>
+                <li><b>Watch Prices:</b> Prices update every 5 seconds. Try to buy low and sell high!</li>
+                <li><b>Track Portfolio:</b> Your wallet shows your balances and portfolio value.</li>
+                <li><b>Complete Quests:</b> Click quests to learn and earn XP.</li>
+            </ul>
+            <button onclick="document.getElementById('howToPlayModal').style.display='none'" style="margin-top:20px;background:#FFD700;color:#222;border:none;padding:12px 30px;border-radius:10px;font-weight:bold;cursor:pointer;">Close</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1 class="neon-glow">CRYPTOLAND</h1>
+        <p>Master the Blockchain Universe</p>
+    </div>
+
+    <div class="game-container">
+        <div class="main-game">
+            <div class="trading-simulator">
+                <h2 class="neon-glow">📈 Crypto Trading Simulator</h2>
+                <div class="price-chart" id="priceChart">
+                    <canvas id="chartCanvas" width="600" height="300" style="display:block;width:100%;height:300px;"></canvas>
+                </div>
+                
+                <div class="trading-controls">
+                    <button class="trade-button" onclick="buyCrypto('BTC')">Buy Bitcoin</button>
+                    <button class="trade-button" onclick="buyCrypto('ETH')">Buy Ethereum</button>
+                    <button class="sell-button" onclick="sellCrypto()">Sell Holdings</button>
+                    <button class="trade-button" onclick="showLesson('blockchain')">Learn Blockchain</button>
+                </div>
+            </div>
+
+            <div class="security-panel">
+                <h3 class="neon-glow">🔐 Security Center</h3>
+                <div class="security-tip">
+                    <strong>Hot vs Cold Wallets:</strong> Hot wallets are connected to the internet (convenient but riskier). Cold wallets are offline (more secure for long-term storage).
+                </div>
+                <div class="security-tip">
+                    <strong>Private Keys:</strong> Never share your private keys! They're like your crypto bank account password.
+                </div>
+                <button class="trade-button" onclick="showLesson('security')" style="margin-top: 15px;">Security Quiz</button>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="crypto-wallet">
+                <div class="wallet-header neon-glow">🔑 Your Crypto Wallet</div>
+                <div style="margin-bottom:10px; text-align:center;">
+                    <span style="color:#F7931A;">₿ BTC: $<span id="btcPrice">0.00</span></span> &nbsp; 
+                    <span style="color:#627EEA;">Ξ ETH: $<span id="ethPrice">0.00</span></span> &nbsp; 
+                    <span style="color:#0033AD;">₳ ADA: $<span id="adaPrice">0.00</span></span>
+                </div>
+                <div class="crypto-balance btc">
+                    <div>
+                        <span class="crypto-icon">₿</span>
+                        <span>Bitcoin</span>
+                    </div>
+                    <div id="btcBalance">0.0000 BTC</div>
+                </div>
+                <div class="crypto-balance eth">
+                    <div>
+                        <span class="crypto-icon">Ξ</span>
+                        <span>Ethereum</span>
+                    </div>
+                    <div id="ethBalance">0.000 ETH</div>
+                </div>
+                <div class="crypto-balance ada">
+                    <div>
+                        <span class="crypto-icon">₳</span>
+                        <span>Cardano</span>
+                    </div>
+                    <div id="adaBalance">0 ADA</div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <div class="progress-ring">
+                        <svg>
+                            <circle class="background" cx="60" cy="60" r="50"></circle>
+                            <circle class="progress" cx="60" cy="60" r="50" 
+                                    stroke-dasharray="314" stroke-dashoffset="125" id="portfolioProgress"></circle>
+                        </svg>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #FFD700;">
+                            <div style="font-size: 1.2rem; font-weight: bold;" id="portfolioValue">$2,847</div>
+                            <div style="font-size: 0.8rem;">Portfolio</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quest-panel">
+                <h3 class="neon-glow">⚡ Active Quests</h3>
+                <div class="quest-item" onclick="showLesson('defi')">
+                    <strong>DeFi Explorer</strong>
+                    <p>Learn about Decentralized Finance</p>
+                    <div style="color: #FFD700;">Reward: 50 XP</div>
+                </div>
+                <div class="quest-item" onclick="showLesson('nft')">
+                    <strong>NFT Collector</strong>
+                    <p>Understand Non-Fungible Tokens</p>
+                    <div style="color: #FFD700;">Reward: 75 XP</div>
+                </div>
+                <div class="quest-item" onclick="showLesson('mining')">
+                    <strong>Crypto Miner</strong>
+                    <p>Learn about blockchain mining</p>
+                    <div style="color: #FFD700;">Reward: 100 XP</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lesson-modal" id="lessonModal">
+        <div class="modal-content">
+            <h2 class="neon-glow" id="lessonTitle">Blockchain Basics</h2>
+            <div id="lessonContent">
+                <p>A blockchain is a distributed ledger technology that maintains a continuously growing list of records, called blocks, which are linked and secured using cryptography.</p>
+            </div>
+            <button class="trade-button" onclick="closeLessonModal()" style="margin-top: 20px;">Complete Lesson</button>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <div id="notificationText">Welcome to CryptoLand!</div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            btc: 0.0157,
+            eth: 0.245,
+            ada: 150,
+            usdBalance: 1000,
+            portfolioValue: 2847,
+            xp: 0,
+            completedQuests: []
+        };
+
+        // Crypto prices (simulated)
+        let cryptoPrices = {
+            BTC: 45000,
+            ETH: 3200,
+            ADA: 1.2
+        };
+
+        let btcPriceHistory = [cryptoPrices.BTC]; // Start with initial price
+
+        // Lesson content
+        const lessons = {
+            blockchain: {
+                title: "🔗 Blockchain Technology",
+                content: `
+                    <h3>What is Blockchain?</h3>
+                    <p>A blockchain is like a digital ledger book that's shared across many computers. Every transaction is recorded in "blocks" that are chained together.</p>
+                    
+                    <h3>Key Features:</h3>
+                    <ul>
+                        <li><strong>Decentralized:</strong> No single authority controls it</li>
+                        <li><strong>Transparent:</strong> All transactions are visible</li>
+                        <li><strong>Immutable:</strong> Records cannot be changed once added</li>
+                        <li><strong>Secure:</strong> Protected by cryptography</li>
+                    </ul>
+                    
+                    <h3>Real-world Applications:</h3>
+                    <p>Banking, Supply Chain, Healthcare, Voting Systems, Digital Identity</p>
+                `
+            },
+            security: {
+                title: "🔐 Crypto Security",
+                content: `
+                    <h3>Protecting Your Crypto</h3>
+                    <p>Security is the most important aspect of cryptocurrency ownership.</p>
+                    
+                    <h3>Best Practices:</h3>
+                    <ul>
+                        <li><strong>Use Strong Passwords:</strong> Complex, unique passwords</li>
+                        <li><strong>Enable 2FA:</strong> Two-factor authentication</li>
+                        <li><strong>Cold Storage:</strong> Keep large amounts offline</li>
+                        <li><strong>Backup Seed Phrases:</strong> Write them down safely</li>
+                        <li><strong>Verify Addresses:</strong> Double-check before sending</li>
+                    </ul>
+                    
+                    <div style="background: rgba(255, 68, 68, 0.2); padding: 15px; border-radius: 10px; margin: 15px 0;">
+                        <strong>⚠️ Warning:</strong> Never share your private keys or seed phrases with anyone!
+                    </div>
+                `
+            },
+            defi: {
+                title: "🏦 Decentralized Finance (DeFi)",
+                content: `
+                    <h3>What is DeFi?</h3>
+                    <p>DeFi recreates traditional financial systems using blockchain technology, removing the need for banks and brokers.</p>
+                    
+                    <h3>DeFi Services:</h3>
+                    <ul>
+                        <li><strong>Lending & Borrowing:</strong> Earn interest or get loans</li>
+                        <li><strong>Decentralized Exchanges:</strong> Trade without intermediaries</li>
+                        <li><strong>Yield Farming:</strong> Earn rewards by providing liquidity</li>
+                        <li><strong>Staking:</strong> Lock tokens to secure networks</li>
+                    </ul>
+                    
+                    <h3>Benefits:</h3>
+                    <p>24/7 availability, global access, higher yields, full control of funds</p>
+                `
+            },
+            nft: {
+                title: "🎨 Non-Fungible Tokens (NFTs)",
+                content: `
+                    <h3>Understanding NFTs</h3>
+                    <p>NFTs are unique digital tokens that represent ownership of specific digital or physical items.</p>
+                    
+                    <h3>Key Characteristics:</h3>
+                    <ul>
+                        <li><strong>Unique:</strong> Each NFT is one-of-a-kind</li>
+                        <li><strong>Ownership:</strong> Blockchain proves ownership</li>
+                        <li><strong>Transferable:</strong> Can be bought, sold, traded</li>
+                        <li><strong>Programmable:</strong> Smart contract functionality</li>
+                    </ul>
+                    
+                    <h3>Use Cases:</h3>
+                    <p>Digital Art, Gaming Items, Music, Virtual Real Estate, Identity Verification</p>
+                `
+            },
+            mining: {
+                title: "⛏️ Cryptocurrency Mining",
+                content: `
+                    <h3>What is Crypto Mining?</h3>
+                    <p>Mining is the process of validating transactions and adding them to the blockchain while earning cryptocurrency rewards.</p>
+                    
+                    <h3>How it Works:</h3>
+                    <ul>
+                        <li><strong>Transaction Verification:</strong> Miners check transaction validity</li>
+                        <li><strong>Block Creation:</strong> Bundle transactions into blocks</li>
+                        <li><strong>Proof of Work:</strong> Solve complex mathematical puzzles</li>
+                        <li><strong>Block Addition:</strong> Add verified blocks to blockchain</li>
+                        <li><strong>Reward:</strong> Receive cryptocurrency for successful mining</li>
+                    </ul>
+                    
+                    <h3>Environmental Considerations:</h3>
+                    <p>Modern blockchains are moving to more energy-efficient consensus mechanisms like Proof of Stake.</p>
+                `
+            }
+        };
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // --- How to Play Modal Logic ---
+        document.getElementById('howToPlayBtn').onclick = function() {
+            document.getElementById('howToPlayModal').style.display = 'flex';
+        };
+        // Close modal on outside click
+        document.getElementById('howToPlayModal').onclick = function(e) {
+            if (e.target === this) this.style.display = 'none';
+        };
+
+        // --- Wallet Display Fix ---
+        function updateWalletDisplay() {
+            document.getElementById('btcBalance').textContent = `${gameState.btc.toFixed(4)} BTC`;
+            document.getElementById('ethBalance').textContent = `${gameState.eth.toFixed(3)} ETH`;
+            document.getElementById('adaBalance').textContent = `${gameState.ada.toFixed(0)} ADA`;
+            document.getElementById('btcPrice').textContent = cryptoPrices.BTC.toFixed(2);
+            document.getElementById('ethPrice').textContent = cryptoPrices.ETH.toFixed(2);
+            document.getElementById('adaPrice').textContent = cryptoPrices.ADA.toFixed(3);
+        }
+
+        // Buy crypto function
+        function buyCrypto(crypto) {
+            const amount = crypto === 'BTC' ? 0.001 : crypto === 'ETH' ? 0.01 : 10;
+            const cost = cryptoPrices[crypto] * amount;
+            
+            if (gameState.usdBalance >= cost) {
+                gameState.usdBalance -= cost;
+                if (crypto === 'BTC') gameState.btc += amount;
+                else if (crypto === 'ETH') gameState.eth += amount;
+                else if (crypto === 'ADA') gameState.ada += amount;
+                
+                updateWalletDisplay();
+                showNotification(`Bought ${amount} ${crypto} for $${cost.toFixed(2)}`);
+                updatePortfolioValue();
+            } else {
+                showNotification('Insufficient funds!');
+            }
+        }
+
+        // Sell crypto function
+        function sellCrypto() {
+            const totalValue = (gameState.btc * cryptoPrices.BTC) + 
+                              (gameState.eth * cryptoPrices.ETH) + 
+                              (gameState.ada * cryptoPrices.ADA);
+            
+            gameState.usdBalance += totalValue;
+            gameState.btc = 0;
+            gameState.eth = 0;
+            gameState.ada = 0;
+            
+            updateWalletDisplay();
+            showNotification(`Sold all crypto for $${totalValue.toFixed(2)}`);
+            updatePortfolioValue();
+        }
+
+        // Update wallet display
+        function updateWalletDisplay() {
+            document.getElementById('btcBalance').textContent = `${gameState.btc.toFixed(4)} BTC`;
+            document.getElementById('ethBalance').textContent = `${gameState.eth.toFixed(3)} ETH`;
+            document.getElementById('adaBalance').textContent = `${gameState.ada.toFixed(0)} ADA`;
+        }
+
+        // Update portfolio value
+        function updatePortfolioValue() {
+            const totalValue = (gameState.btc * cryptoPrices.BTC) + 
+                              (gameState.eth * cryptoPrices.ETH) + 
+                              (gameState.ada * cryptoPrices.ADA) + 
+                              gameState.usdBalance;
+            
+            gameState.portfolioValue = totalValue;
+            document.getElementById('portfolioValue').textContent = `$${totalValue.toLocaleString()}`;
+            
+            // Update progress ring
+            const progress = Math.min((totalValue / 5000) * 314, 314);
+            document.getElementById('portfolioProgress').style.strokeDashoffset = 314 - progress;
+        }
+
+        // Show lesson modal
+        function showLesson(lessonKey) {
+            const modal = document.getElementById('lessonModal');
+            const title = document.getElementById('lessonTitle');
+            const content = document.getElementById('lessonContent');
+            
+            const lesson = lessons[lessonKey];
+            if (lesson) {
+                title.textContent = lesson.title;
+                content.innerHTML = lesson.content;
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Close lesson modal
+        function closeLessonModal() {
+            const modal = document.getElementById('lessonModal');
+            modal.style.display = 'none';
+            
+            // Award XP
+            gameState.xp += 25;
+            showNotification('Quest completed! +25 XP earned');
+        }
+
+        // Simulate price changes
+        function simulatePriceChanges() {
+            Object.keys(cryptoPrices).forEach(crypto => {
+                const change = (Math.random() - 0.5) * 0.02; // ±1% change
+                cryptoPrices[crypto] *= (1 + change);
+            });
+
+            // Add new BTC price to history
+            btcPriceHistory.push(cryptoPrices.BTC);
+            if (btcPriceHistory.length > 50) btcPriceHistory.shift(); // Keep last 50 points
+
+            updatePortfolioValue();
+            drawBTCChart();
+        }
+
+        // Improved BTC Chart
+        function drawBTCChart() {
+            const canvas = document.getElementById('chartCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width = canvas.offsetWidth;
+            const h = canvas.height = canvas.offsetHeight;
+
+            ctx.clearRect(0, 0, w, h);
+
+            if (btcPriceHistory.length < 2) return;
+
+            // Find min/max for scaling, add 5% padding
+            const min = Math.min(...btcPriceHistory);
+            const max = Math.max(...btcPriceHistory);
+            const pad = (max - min) * 0.05 || 1;
+            const minY = min - pad;
+            const maxY = max + pad;
+
+            // Draw grid lines
+            ctx.strokeStyle = "#223344";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 6]);
+            for (let i = 0; i <= 4; i++) {
+                const y = h - (i / 4) * (h - 40) - 10;
+                ctx.beginPath();
+                ctx.moveTo(40, y);
+                ctx.lineTo(w - 10, y);
+                ctx.stroke();
+                // Price labels
+                ctx.fillStyle = "#FFD700";
+                ctx.font = "12px Courier New";
+                const priceLabel = (minY + ((maxY - minY) * (i / 4))).toFixed(0);
+                ctx.fillText(`$${priceLabel}`, 2, y + 4);
+            }
+            ctx.setLineDash([]);
+
+            // Draw BTC price line
+            ctx.beginPath();
+            btcPriceHistory.forEach((price, i) => {
+                const x = 40 + (i / (btcPriceHistory.length - 1)) * (w - 60);
+                const y = h - ((price - minY) / (maxY - minY)) * (h - 40) - 10;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.strokeStyle = "#00FF88";
+            ctx.lineWidth = 3;
+            ctx.shadowColor = "#00FF88";
+            ctx.shadowBlur = 8;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Draw current price text
+            ctx.fillStyle = "#FFD700";
+            ctx.font = "bold 18px Courier New";
+            ctx.fillText(`BTC $${btcPriceHistory[btcPriceHistory.length-1].toFixed(2)}`, 50, 30);
+        }
+
+        // Initialize game
+        function initGame() {
+            updateWalletDisplay();
+            updatePortfolioValue();
+            drawBTCChart(); // Draw initial chart
+            showNotification('Welcome to CryptoLand! Start your blockchain journey!');
+            setInterval(simulatePriceChanges, 5000);
+        }
+
+        // Start game when page loads
+        window.addEventListener('load', initGame);
+
+        // Close modal when clicking outside
+        document.getElementById('lessonModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLessonModal();
+            }
+        });
+    </script>
+</body>
+</html>
